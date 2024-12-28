@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>upload</title>
+    <script src="js/js.js"></script>
+    <!-- normalize file calling -->
+    <link rel="stylesheet" href="css/normalizer.css" />
+    <!-- call ffont awsowm -->
+    <link rel="stylesheet" href="css/all.min.css" />
+    <!-- call the main css sheet -->
+    <link rel="stylesheet" href="css/task-2.css" />
+    <!-- font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Tajawal:wght@200;300;400;500;700;800;900&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Work+Sans:ital,wght@0,100..900;1,100..900&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+
+  <body>
+    <div class="header">
+      <div class="container">
+        <h1>Upload Something fresh</h1>
+      </div>
+    </div>
+
+    <div class="landing-pag">
+      <div class="container">
+        <div id="media"></div>
+        <!-- try -->
+        <div id="trash">
+          <audio id="audioPlayback" controls></audio>
+        </div>
+        <!-- try -->
+        <div class="upload-div">
+          <i
+            id="recordButton"
+            class="fa-solid fa-microphone"
+            style="cursor: pointer"
+          ></i>
+          <i
+            id="stopButton"
+            class="fa-solid fa-pause"
+            style="cursor: pointer"
+          ></i>
+          <i
+            for="file"
+            style="
+              cursor: pointer;
+              background-color: #ffd2a7;
+              border: 8px solid #ffd2a7;
+              border-radius: 16px;
+            "
+            class="fa-solid fa-plus"
+            onclick="document.getElementById('file').click()"
+          ></i>
+          <input type="file" id="file" style="display: none" />
+        </div>
+      </div>
+    </div>
+    <script>
+      let fileinput = document.getElementById("file");
+
+      let privew1 = document.getElementById("media");
+      // console.log(buttun1);
+      fileinput.addEventListener("change", function () {
+        const fr = new FileReader();
+        const fileis = fileinput.files[0];
+        fr.readAsDataURL(fileinput.files[0]);
+        fr.addEventListener("load", () => {
+          const url = fr.result;
+          console.log(fileis.type);
+          privew1.innerHTML = "";
+          //if++++++++++++++++++
+          if (fileis.type.startsWith("image/")) {
+            console.log(fileis.type);
+            const img = new Image();
+            img.src = url;
+
+            img.className = "resize";
+            privew1.appendChild(img);
+          }
+          // else++++++++++++++++++++
+          else if (fileis.type.startsWith("video/")) {
+            var video = document.createElement("video");
+
+            video.src = url;
+            video.autoplay = true;
+            video.className = "resize";
+            privew1.appendChild(video);
+            // else++++++++++++++++++++
+          } else if (fileis.type.startsWith("audio/")) {
+            const audio = document.createElement("audio");
+            audio.src = url;
+            audio.controls = true;
+
+            privew1.appendChild(audio);
+          }
+        });
+        // window.alert("sometext");
+      });
+
+      const recordButton = document.getElementById("recordButton");
+      const stopButton = document.getElementById("stopButton");
+      const audioPlayback = document.getElementById("audioPlayback");
+      const trash = document.getElementById("trash");
+      let mediaRecorder;
+      let audioChunks = [];
+
+      recordButton.addEventListener("click", () => {
+        navigator.mediaDevices.getUserMedia({ audio: true }).then((stream) => {
+          mediaRecorder = new MediaRecorder(stream);
+          mediaRecorder.start();
+
+          mediaRecorder.addEventListener("dataavailable", (event) => {
+            audioChunks.push(event.data);
+          });
+
+          mediaRecorder.addEventListener("stop", () => {
+            const audioBlob = new Blob(audioChunks, { type: "audio/wav" });
+            const audioUrl = URL.createObjectURL(audioBlob);
+            audioPlayback.src = audioUrl;
+            audioChunks = [];
+            // recordButton.classList.toggle("highlight");
+          });
+
+          recordButton.disabled = true;
+          stopButton.disabled = false;
+        });
+      });
+
+      stopButton.addEventListener("click", () => {
+        mediaRecorder.stop();
+        recordButton.disabled = false;
+        stopButton.disabled = true;
+      });
+      // add effects
+      recordButton.addEventListener("click", function () {
+        this.style.display = "none";
+        stopButton.style.display = "flex";
+        stopButton.style.color = "rgba(212, 11, 11, 1)";
+        // stopButton.style.position = "unset";
+      });
+      stopButton.addEventListener("click", function () {
+        stopButton.style.display = "none";
+        recordButton.style.display = "flex";
+
+        // stopButton.style.position = "absolute";
+        trash.classList.toggle("show");
+      });
+      //  display: none;
+    </script>
+  </body>
+</html>
